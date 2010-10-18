@@ -20,13 +20,52 @@ RULES implemented in this validator:
 min)
 
 SAMPLE RESULT INPUT:
-     AMUBLANCE: HOSPITAL_ID: (hosx,hosy), PERSON_ID: (px,py,ptime),
-     PERSON_ID: (px,py,ptime) 
-     Ambulance: 1: (45,32), 5: (84,26,95)
-     Ambulance: 1: (45,32), 6: (64,30,74), 11: (56,26,80)
-     Ambulance: 1: (45,32), 42: (29,42,67)
-     Ambulance: 2: (59,68), 8: (68,57,52)
-     Ambulance: 2: (59,68), 14: (66,47,58)
+     P=Pickup 
+     D=Drop off
+     Each ambulance gets a global_unique_ID, also for people [index
+     starts from 0]
+     Everysingle time an ambulance is created, they are assigned a
+     static location (FOR their hospital)
+     	    i.e. if input of hospital(nmambulance) look like
+	    	 ----
+		 5
+		 9
+		 6
+		 ----
+		 There exists 3 hospitals with static loc (x1,y1),
+     (x2,y2), (x3,y3), and there are 20 ambulances total (amb 0->20).
+     
+     Input starts with form "ambulance:"+AMBULANCE_ID(P or D) depending on Pick up or
+     Drop-off, with its associated hospital's (x, y).
+     	   i.e. in our example above, if hospital_id:2's location is
+     (100,100), ambulance:10 will have (100, 100) following their id
+     all the time.
+
+     Then, the input is followed by the id and information of the
+     people picked up OR dropped, depending on the P or D following
+     the Ambulane ID.
+
+     Amubulance:AMUBLANCE_ID(P or D): (hosx,hosy) PERSON0_ID: (px,py,ptime)
+     PERSON1_ID: (px,py,ptime) ...upto PERSON3_ID: (px,py,ptime)
+     
+     EXAMPLE:
+     Ambulance 1(P) (45,32) 5 (84,26,95)
+     Ambulance 1(D) (45,32) 6 (64,30,74) 11 (56,26,80)
+     Ambulance 3(P) (45,32) 42 (29,42,67)
+     Ambulance 10(P) (59,68) 8 (68,57,52) 4 (2,3,40)
+     Ambulance 1(D) (45,32) 14 (66,47,58)
      ....
+
+     DELIMITERS:
+     All inputs other than the (x,y) location coordinates, ALL
+     delimiters will be the white space.
+     So
+     Ambulance      1(P  )   (45,32)  5     (84,26,95)
+     and 
+     Ambulance 1(P) (45,32)  5 (84,26,95)
+
+     are the same.
+
+     
 
 

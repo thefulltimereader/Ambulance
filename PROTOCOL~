@@ -1,7 +1,32 @@
-1. Compile the validator:
-   javac Validator.java
-2. Solve the problem, write the solution out to a file or stdin
-3. run validator with the original data file and result file, or from
-   stdin:
-   a) java Validator datafile resultfile
-   b) executeYourPorgram datafile | java Validator datafile
+The validator output:
+
+-VALID
+	-SCORE: int number of people rescued
+-INVALID
+	-BAD INPUT
+	-Person already rescued
+	-A person died in the ambulance
+	-A person does not exist
+	-A person is already rescued
+	-Too many people in the ambulance
+	-etc.. more to come
+
+RULES implemented in this validator:
+- 1 min to go one block north-south, east-west
+- the ambulances do NOT need to return ot the hosiptal they begin
+- each ambulance can carry up to FOUR
+- 1 min to load ONE person
+- up to 1 min to unload FOUR people (however many <= 4, requires 1
+min)
+
+SAMPLE RESULT INPUT:
+     AMUBLANCE: HOSPITAL_ID: (hosx,hosy), PERSON_ID: (px,py,ptime),
+     PERSON_ID: (px,py,ptime) 
+     Ambulance: 1: (45,32), 5: (84,26,95)
+     Ambulance: 1: (45,32), 6: (64,30,74), 11: (56,26,80)
+     Ambulance: 1: (45,32), 42: (29,42,67)
+     Ambulance: 2: (59,68), 8: (68,57,52)
+     Ambulance: 2: (59,68), 14: (66,47,58)
+     ....
+
+
