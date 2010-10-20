@@ -45,24 +45,24 @@ SAMPLE RESULT INPUT:
      people picked up OR dropped, depending on the P or D following
      the Ambulane ID.
 
-     Amubulance:AMUBLANCE_ID(P or D): (hosx,hosy) PERSON0_ID: (px,py,ptime)
-     PERSON1_ID: (px,py,ptime) ...upto PERSON3_ID: (px,py,ptime)
+     Amubulance:AMUBLANCE_ID:P or D (hosx,hosy) PERSON0_ID (px,py,ptime)
+     PERSON1_ID (px,py,ptime) ...upto PERSON3_ID (px,py,ptime)
      
      EXAMPLE:
-     Ambulance 1(P) (45,32) 5 (84,26,95)
-     Ambulance 1(D) (45,32) 6 (64,30,74) 11 (56,26,80)
-     Ambulance 3(P) (45,32) 42 (29,42,67)
-     Ambulance 10(P) (59,68) 8 (68,57,52) 4 (2,3,40)
-     Ambulance 1(D) (45,32) 14 (66,47,58)
+     Ambulance 1:P (45,32) 5 (84,26,95)
+     Ambulance 1:D (45,32) 6 (64,30,74) 11 (56,26,80)
+     Ambulance 3:P (45,32) 42 (29,42,67)
+     Ambulance 10:P (59,68) 8 (68,57,52) 4 (2,3,40)
+     Ambulance 1:D (45,32) 14 (66,47,58)
      ....
 
      DELIMITERS:
-     All inputs other than the (x,y) location coordinates, ALL
+     All inputs other than the (x,y) location coordinates and :, ALL
      delimiters will be the white space.
      So
-     Ambulance      1(P  )   (45,32)  5     (84,26,95)
+     Ambulance      1: P     (45,32)  5     (84,26,95)
      and 
-     Ambulance 1(P) (45,32)  5 (84,26,95)
+     Ambulance 1:P (45,32)  5 (84,26,95)
 
      are the same.
 
