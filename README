@@ -5,3 +5,7 @@
    stdin:
    a) java Validator datafile resultfile
    b) executeYourPorgram datafile | java Validator datafile
+   
+   
+   the first argument MUST be the input data file
+   the second argmuent can either be a file or standard input
