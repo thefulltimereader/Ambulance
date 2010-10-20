@@ -3,11 +3,15 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 final class Validator{
-  final List<Person> injured;
-  final List<Integer> hospitals;
+  private List<Person> injured;
+  private List<Integer> hospitals;
+  private Map<Integer, Ambulance> ambulances;
+  private int numHospitals = 0;
+
   public static void main(String args[]){
     Validator v = new Validator();
     Scanner input = null;
@@ -21,21 +25,22 @@ final class Validator{
       System.err.println("Input file DNE");
       e.printStackTrace();
     }
-     //validate!
-     v.validate(input);
-     
-    
+    //validate!
+    v.validate(input);
+
+
   }
   /**
    * the core method. Reads result line by line and validate it.
    */
   private void validate(Scanner in){
-    
+    String line = in.nextLine();
   }
 
   private Validator(){
     injured = new ArrayList<Person>();
     hospitals = new ArrayList<Integer>();
+    ambulances = new HashMap<Integer, Ambulance>();
   }
 
   private void buildInput(Scanner in){
@@ -47,9 +52,12 @@ final class Validator{
             Integer.parseInt(ints[1]), Integer.parseInt(ints[2]));
         //  System.out.println(p.toString());
         injured.add(p);  
-      }
-      else if(ints[0].length()==1){
-        hospitals.add(Integer.parseInt(ints[0]));
+      } else if (ints[0].length() == 1) {
+        for (int i = numHospitals,len = Integer.parseInt(ints[0])+numHospitals;
+        i < len; i++) {
+          ambulances.put(i, new Ambulance());
+        }
+        numHospitals++;
       }
     }
   }
@@ -68,6 +76,19 @@ final class Validator{
     }
     public String toString(){
       return "I am at ("+x+","+y+") with time:" + time;
+    }
+  }
+
+  private class Ambulance{
+    int hosX;
+    int hosY;
+    Person[] carrying;
+    Ambulance(){
+      carrying = new Person[4];
+    }
+    void setHospitalLocation(int x, int y){
+      hosX = x;
+      hosY = y;
     }
   }
 

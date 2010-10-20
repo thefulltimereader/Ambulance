@@ -24,10 +24,10 @@ SAMPLE RESULT INPUT:
      D=Drop off
      Each ambulance gets a global_unique_ID, also for people [index
      starts from 0]
-     Everysingle time an ambulance is created, they are assigned a
+     First time an ambulance is introduced, they are assigned a
      static location (FOR their hospital)
-     	    i.e. if input of hospital(nmambulance) look like
-	    	 ----
+     	i.e. if input of hospital(nmambulance) look like
+	    ----
 		 5
 		 9
 		 6
@@ -35,37 +35,40 @@ SAMPLE RESULT INPUT:
 		 There exists 3 hospitals with static loc (x1,y1),
      (x2,y2), (x3,y3), and there are 20 ambulances total (amb 0->20).
      
+     Input format
      Input starts with form "ambulance:"+AMBULANCE_ID(P or D) depending on Pick up or
      Drop-off, with its associated hospital's (x, y).
      	   i.e. in our example above, if hospital_id:2's location is
      (100,100), ambulance:10 will have (100, 100) following their id
      all the time.
 
-     Then, the input is followed by the id and information of the
-     people picked up OR dropped, depending on the P or D following
-     the Ambulane ID.
-
-     Amubulance:AMUBLANCE_ID:P or D (hosx,hosy) PERSON0_ID (px,py,ptime)
-     PERSON1_ID (px,py,ptime) ...upto PERSON3_ID (px,py,ptime)
+     Dropping/Picking up:
+     If Ambulance ID (x, y) is followed by id/info of people, it is assumed that
+     that input is a PICKUP
+     Otherwise, it will be a drop off
      
-     EXAMPLE:
-     Ambulance 1:P (45,32) 5 (84,26,95)
-     Ambulance 1:D (45,32) 6 (64,30,74) 11 (56,26,80)
-     Ambulance 3:P (45,32) 42 (29,42,67)
-     Ambulance 10:P (59,68) 8 (68,57,52) 4 (2,3,40)
-     Ambulance 1:D (45,32) 14 (66,47,58)
+     So pickup would look like:
+     Amubulance:AMUBLANCE_ID (hosx,hosy) PERSON0_ID (px,py,ptime)
+     PERSON1_ID (px,py,ptime) ...upto PERSON3_ID (px,py,ptime)
+     Drop off is:
+     Amubulance:AMUBLANCE_ID (hosx,hosy)
+     
+     EXAMPLE (using sampleInput):
+	Ambulance 0 (45,32) 5 (95,82,115) //Ambulance 0 from Hospital 0 [location of Hospital 0 introduced here] picks up person id 5
+	Ambulance 6 (30,30) 115 (31,39,110) 141 (31,88,145) //Ambulance 6 from Hospital 1 [loc of Hos1 introduced here] picks up person115 and person 141
+	Ambulance 1 (45,32) 186 (49,76,139) 9 (60, 68, 72) //Ambulance 1 from Hospital 0[HAS to have the loc of Hospital 0 stated in the first line] picks up 186 and 9
+	Ambulance 1 (30,30) //Ambulance 1 Drops off everyone it has on hospital 1
+	Ambulance 14 (59,68) 206 (59,22,70) //Ambulance 14 from hospital 2 picks up 206
      ....
 
      DELIMITERS:
-     All inputs other than the (x,y) location coordinates and :, ALL
-     delimiters will be the white space.
-     So
-     Ambulance      1: P     (45,32)  5     (84,26,95)
+     All inputs other than the (x,y) location coordinates ALL
+     delimiters will be the white space. So please have at least 1 space between
+     inputs.
+     
+     Ambulance      1    (45,32)  5     (84,26,95)
      and 
-     Ambulance 1:P (45,32)  5 (84,26,95)
+     Ambulance 1 (45,32)  5 (84,26,95)
 
      are the same.
-
-     
-
 
