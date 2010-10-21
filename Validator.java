@@ -30,7 +30,7 @@ final class Validator{
     ///validate!
     try {
       v.validate(input);
-      System.out.println("Valid! Total # of people rescued=" + v.totalRescued);
+      System.out.println("Valid! Total # of people rescued = " + v.totalRescued);
     } catch (Exception e) {
       System.err.println("Oops: "+ e.getMessage());
       e.printStackTrace();
