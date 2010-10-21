@@ -54,11 +54,16 @@ SAMPLE RESULT INPUT:
      Amubulance:AMUBLANCE_ID (hosx,hosy)
      
      EXAMPLE (using sampleInput):
-	Ambulance 0 (45,32) 5 (95,82,115) //Ambulance 0 from Hospital 0 [location of Hospital 0 introduced here] picks up person id 5
-	Ambulance 6 (30,30) 115 (31,39,110) 141 (31,88,145) //Ambulance 6 from Hospital 1 [loc of Hos1 introduced here] picks up person115 and person 141
-	Ambulance 1 (45,32) 186 (49,76,139) 9 (60, 68, 72) //Ambulance 1 from Hospital 0[HAS to have the loc of Hospital 0 stated in the first line] picks up 186 and 9
-	Ambulance 1 (30,30) //Ambulance 1 Drops off everyone it has on hospital 1
-	Ambulance 14 (59,68) 206 (59,22,70) //Ambulance 14 from hospital 2 picks up 206
+//Ambulance 0 from Hospital 0 [location of Hospital 0 introduced here] picks up person id 5
+	Ambulance 0 (45,32) 5 (95,82,115) 
+//Ambulance 6 from Hospital 1 [loc of Hos1 introduced here] picks up person115 and person 141
+	Ambulance 6 (30,30) 115 (31,39,110) 141 (31,88,145)
+//Ambulance 1 from Hospital 0[HAS to have the loc of Hospital 0 stated in the first line] picks up 186 and 9 
+	Ambulance 1 (45,32) 186 (49,76,139) 7 (60, 68, 72) 
+//Ambulance 1 Drops off everyone it has on hospital 1
+	Ambulance 1 (30,30) 
+//Ambulance 14 from hospital 2 picks up 206
+	Ambulance 14 (59,68) 206 (59,22,70) 
      ....
 
      DELIMITERS:
