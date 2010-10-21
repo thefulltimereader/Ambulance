@@ -64,11 +64,15 @@ SAMPLE RESULT INPUT:
      DELIMITERS:
      All inputs other than the (x,y) location coordinates ALL
      delimiters will be the white space. So please have at least 1 space between
-     inputs.
+     inputs. 
+     *BUT* please just to make my life easier, please have the coordinates (x,y) with no space.
      
-     Ambulance      1    (45,32)  5     (84,26,95)
+     Ambulance   1    (45,32)  5     (84,26,95)
      and 
      Ambulance 1 (45,32)  5 (84,26,95)
 
      are the same.
+     BUT
+     Ambulance 1 (45 , 32) 5 (84, 26, 95)
+     is bad.
 

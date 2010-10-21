@@ -31,10 +31,12 @@ final class Validator{
     ///validate!
     try {
       v.validate(input);
+      System.out.println("Valid! Total # of people rescued=" + v.totalRescued);
     } catch (Exception e) {
-      
+      System.err.println("Oops: "+ e.getMessage());
       e.printStackTrace();
     }
+    
   }
   /**
    * the core method. Reads result line by line and validate it.
@@ -48,18 +50,25 @@ final class Validator{
       int ambulanceID = Integer.parseInt(line[1]);
       String locs = line[2];
       checkCoordinateInput(locs); //line[2] = (x,y)
-      int x = getX(locs); int y = getY(locs);
+      int x = getX(locs); int y = getYForTwo(locs);
       Ambulance amb = ambulances.get(ambulanceID);
       System.out.println("looking at Amb "+ ambulanceID+" at ("+x+","+y+")");
       checkHospitalLocation(x,y,amb);
       if(line.length>3){ //pick up
         int i = 3;
-        while (i < line.length){
+        //for(String s: line) System.out.print(s+" ");
+        while (i < line.length-1){
           int pId = Integer.parseInt(line[i]);
           Person rescuing = injured.get(pId);
-          int px = getX(line[++i]); int py = getY(line[++i]);
-          checkStatusOfInjured(px,py,rescuing);
+          i++;
+          String coordinates = line[i];
+          int px = getX(coordinates); 
+          int py = getY(coordinates);
+          int pt = getTime(coordinates);
+          System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
+          checkStatusOfInjured(px,py,pt,rescuing);
           updateAmbulancePickup(rescuing, amb);
+          i++;
         }
       }
       else{//drop off
@@ -78,6 +87,8 @@ final class Validator{
     amb.addTime(timeSpent);
     int rescued = amb.dropOff();
     totalRescued += rescued;
+    System.out.println("Ambulance "+amb.getId()+" dropped off " + rescued+ 
+        " alive people");
     
     
   }
@@ -105,8 +116,9 @@ final class Validator{
    * @param rescuing
    * @throws Exception
    */
-  private void checkStatusOfInjured(int px, int py, Person rescuing) throws Exception {
-    if(rescuing.x!=px || rescuing.y!=py) 
+  private void checkStatusOfInjured(int px, int py, int pt, Person rescuing) 
+  throws Exception {
+    if(rescuing.getX()!=px || rescuing.getY()!=py || rescuing.getTime()!=pt) 
             throw new IllegalArgumentException("The location of the person "+
                                               rescuing.getId()+" is not the same as input");
     if (rescuing.isRescued()) 
@@ -126,11 +138,21 @@ final class Validator{
       }
     
   }
+  //locs look like: (94,82,111)
   private int getX(String locs){
-    return Integer.parseInt(locs.split("\\(")[1].split(",")[0]);
+    return Integer.parseInt(locs.split("\\(")[1].trim().split(",")[0].trim());
+  }
+  //locs look like: (94, 82)
+  private int getYForTwo(String locs){
+    return Integer.parseInt(locs.split("\\(")[1].trim().split(",")[1].
+        trim().split("\\)")[0]);
   }
   private int getY(String locs){
-    return Integer.parseInt(locs.split("\\(")[1].split(",")[1].split("\\)")[0]);
+    System.out.println("At getY:" + locs);
+    return Integer.parseInt(locs.split("\\(")[1].trim().split(",")[1]);//.split("\\)")[0]);
+  }
+  private int getTime(String locs){
+    return Integer.parseInt(locs.split("\\(")[1].split(",")[2].split("\\)")[0]);
   }
   private Validator(){
     injured = new ArrayList<Person>();
@@ -177,7 +199,7 @@ final class Validator{
       return time<now; 
     }
     public String toString(){
-      return "I am at ("+x+","+y+") with time:" + time;
+      return "I am #" + id+" at ("+x+","+y+") with time:" + time;
     }
     int getId(){
       return id;
@@ -236,10 +258,11 @@ final class Validator{
       if(t>0){
         time += t;
         if(time > 160) 
-          throw new IllegalStateException("2min time over for ambulance "+ id);
+          throw new IllegalStateException("2min time over for ambulance "+ id+
+              "not a valid move!");
         for(Person p: carrying){
           if(!p.isAlive(time)){
-            System.out.println("Person:"+p.getId()+" has died in ambulance"
+            System.out.println("Person:"+p.getId()+" has died in ambulance "
                 + id);
             p.kill();
           }
@@ -253,7 +276,11 @@ final class Validator{
     public int dropOff() {
       int count = 0;
       for(Person p: carrying){
-        if(p.isAlive(time)) count++;
+        if(p.isAlive(time)){
+          count++;
+          p.rescue();
+        }
+        
       }
       carrying.clear();
       return count;
