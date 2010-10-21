@@ -10,7 +10,6 @@ import java.util.Scanner;
 final class Validator{
   private final int MAX_PASSENGER = 4;//of an amb 
   private List<Person> injured;
-  private List<Integer> hospitals;
   private List<Ambulance> ambulances;
   private int numHospitals = 0;
   private int totalRescued = 0;
@@ -101,11 +100,12 @@ final class Validator{
    * @throws exception if the ambulance is full
    */
   private void updateAmbulancePickup(Person p, Ambulance amb) {
-    if(amb.getNumOfPassengers()==4)
+    if(amb.getNumOfPassengers()==MAX_PASSENGER)
       throw new IllegalStateException("This ambulance is full");
     amb.addRescued(p);
-    int timeTaken = getManhattanDistance(amb.getCurrX(), amb.getCurrY(),p.getX(), p.getY());
+    int timeTaken = getManhattanDistance(amb.getCurrX(), amb.getCurrY(),p.getX(), p.getY());    
     timeTaken++; //for loading p
+    //TODO: need this..?p.decreaseLife(timeTaken);
     amb.addTime(timeTaken);
     amb.setNewLocation(p.getX(), p.getY());
   }
@@ -156,7 +156,6 @@ final class Validator{
   }
   private Validator(){
     injured = new ArrayList<Person>();
-    hospitals = new ArrayList<Integer>();
     ambulances = new ArrayList<Ambulance>();
   }
 
