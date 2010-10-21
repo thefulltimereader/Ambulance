@@ -30,7 +30,7 @@ final class Validator{
     ///validate!
     try {
       v.validate(input);
-      System.out.println("Valid! Total # of people rescued=" + v.totalRescued);
+      System.out.println("Valid! Total # of people rescued = " + v.totalRescued);
     } catch (Exception e) {
       System.err.println("Oops: "+ e.getMessage());
       e.printStackTrace();
@@ -52,8 +52,8 @@ final class Validator{
       int x = getX(locs); int y = getYForTwo(locs);
       Ambulance amb = ambulances.get(ambulanceID);
       System.out.println("looking at Amb "+ ambulanceID+" at ("+x+","+y+")");
-      checkHospitalLocation(x,y,amb);
       if(line.length>3){ //pick up
+        checkHospitalLocation(x,y,amb);
         int i = 3;
         //for(String s: line) System.out.print(s+" ");
         while (i < line.length-1){
@@ -81,7 +81,7 @@ final class Validator{
    * @param y
    */
   private void updateAmbulanceDropOff(int x, int y, Ambulance amb) {
-    int timeSpent = 1;
+    int timeSpent = 1;//to unload
     timeSpent += getManhattanDistance(amb.getCurrX(), amb.getCurrY(), x, y);
     amb.addTime(timeSpent);
     int rescued = amb.dropOff();
@@ -105,7 +105,6 @@ final class Validator{
     amb.addRescued(p);
     int timeTaken = getManhattanDistance(amb.getCurrX(), amb.getCurrY(),p.getX(), p.getY());    
     timeTaken++; //for loading p
-    //TODO: need this..?p.decreaseLife(timeTaken);
     amb.addTime(timeTaken);
     amb.setNewLocation(p.getX(), p.getY());
   }
@@ -256,9 +255,6 @@ final class Validator{
     void addTime(int t){
       if(t>0){
         time += t;
-        if(time > 160) 
-          throw new IllegalStateException("2min time over for ambulance "+ id+
-              "not a valid move!");
         for(Person p: carrying){
           if(!p.isAlive(time)){
             System.out.println("Person:"+p.getId()+" has died in ambulance "
