@@ -58,6 +58,9 @@ final class Validator{
             " now at ("+amb.currX+","+amb.currY+") for pickup ");
         int i = 2;
         //for(String s: line) System.out.print(s+" ");
+        if(line[2].length() >3)
+          throw new IllegalArgumentException("For pick up the ambulance ID must " +
+          		"be followed by rescuing personID");
         while (i < line.length-1){
           int pId = Integer.parseInt(line[i]);
           Person rescuing = injured.get(pId);
