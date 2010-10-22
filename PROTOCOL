@@ -36,7 +36,9 @@ SAMPLE RESULT INPUT:
      (x2,y2), (x3,y3), and there are 20 ambulances total (amb 0->20).
      
      Input format
-     Input starts with form "ambulance:"+AMBULANCE_ID(P or D) depending on Pick up or
+     Input starts by stating all the hospital locations
+     Then pickup/drop off starts with
+     "ambulance:"+AMBULANCE_ID(P or D) depending on Pick up or
      Drop-off, with its associated hospital's (x, y).
      	   i.e. in our example above, if hospital_id:2's location is
      (100,100), ambulance:10 will have (100, 100) following their id
@@ -54,6 +56,7 @@ SAMPLE RESULT INPUT:
      Amubulance:AMUBLANCE_ID (hosx,hosy)
      
      EXAMPLE (using sampleInput):
+     Hospitals 0 (17, 72) 1 (30,30) 2 (50,50) 3 (59, 59) 4 (1,1)
 //Ambulance 0 from Hospital 0 [location of Hospital 0 introduced here] picks up person id 5
 	Ambulance 0 (45,32) 5 (95,82,115) 
 //Ambulance 6 from Hospital 1 [loc of Hos1 introduced here] picks up person115 and person 141

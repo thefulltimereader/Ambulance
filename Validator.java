@@ -11,6 +11,7 @@ final class Validator{
   private final int MAX_PASSENGER = 4;//of an amb 
   private List<Person> injured;
   private List<Ambulance> ambulances;
+  private List<Location> hospitals;
   private int numHospitals = 0;
   private int totalRescued = 0;
 
@@ -43,46 +44,72 @@ final class Validator{
   private void validate(Scanner in) throws Exception{
     //String line = in.nextLine();
  //   in = in.skip("(,)");
+    setUpHospitals(in.nextLine());
     while(in.hasNextLine()){
-      String[] line = in.nextLine().split(" ");//line[0] = Ambulance
+      String[] line = in.nextLine().split("\\s+");//line[0] = Ambulance
       //for(String s : line)System.out.println(s);
       int ambulanceID = Integer.parseInt(line[1]);
-      String locs = line[2];
-      checkCoordinateInput(locs); //line[2] = (x,y)
-      int x = getX(locs); int y = getYForTwo(locs);
       Ambulance amb = ambulances.get(ambulanceID);
-      System.out.println("looking at Amb "+ ambulanceID+" at ("+amb.currX+","+amb.currY+")");
+      
       if(line.length>3){ //pick up
-        checkHospitalLocation(x,y,amb);
-        int i = 3;
+        System.out.println("looking at Amb "+ ambulanceID+
+            " now at ("+amb.currX+","+amb.currY+") for pickup ");
+        int i = 2;
         //for(String s: line) System.out.print(s+" ");
         while (i < line.length-1){
           int pId = Integer.parseInt(line[i]);
           Person rescuing = injured.get(pId);
           i++;
           String coordinates = line[i];
+          checkCoordinateInput(coordinates); //line[2] = (x,y)
           int px = getX(coordinates); 
           int py = getY(coordinates);
           int pt = getTime(coordinates);
-          System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
+          //System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
+          System.out.println("\t\tpick up person " + pId);
           checkStatusOfInjured(px,py,pt,rescuing);
           updateAmbulancePickup(rescuing, amb);
           i++;
         }
       }
       else{//drop off
-        updateAmbulanceDropOff(x,y, amb);
+        System.out.println("looking at Amb "+ ambulanceID+
+            " now at ("+amb.currX+","+amb.currY+") for dropoff ");
+        if(line.length<2) 
+          throw new IllegalArgumentException("specify the drop location");
+
+        String coor = line[2];
+        checkCoordinateInput(coor);
+        Location loc = new Location(getX(coor), getYForTwo(coor));
+        checkHospitalLocation(loc,amb);
+        updateAmbulanceDropOff(loc, amb);
       }
     }
+  }
+  private void setUpHospitals(String nextLine) {
+    if (!nextLine.startsWith("Hospitals"))
+      throw new IllegalArgumentException("The result must start with stating " +
+      		"hospital locations!");
+    String[] inputs = nextLine.substring(10).split("\\s+");
+    for(int i=0,n=numHospitals*2; i<n; i++){
+      int ind = Integer.parseInt(inputs[i]);
+      String locs = inputs[++i];
+      checkCoordinateInput(locs); //line[2] = (x,y)
+      int x = getX(locs);
+      int y = getYForTwo(locs);
+      hospitals.add(new Location(x,y));
+    }
+    System.out.println(hospitals);
   }
   /**
    * Drops off everyone in the ambulance to x, y hospital
    * @param x
    * @param y
    */
-  private void updateAmbulanceDropOff(int x, int y, Ambulance amb) {
+  private void updateAmbulanceDropOff(Location loc, Ambulance amb) {
     int timeSpent = 1;//to unload
-    timeSpent += getManhattanDistance(amb.getCurrX(), amb.getCurrY(), x, y);
+    timeSpent += getManhattanDistance(amb.getCurrX(), amb.getCurrY(), 
+        loc.getX(), loc.getY());
     amb.addTime(timeSpent);
     int rescued = amb.dropOff();
     totalRescued += rescued;
@@ -125,16 +152,15 @@ final class Validator{
     
   }
   private void checkCoordinateInput(String locs) {
-    if(!locs.matches("[(]{1}\\d{0,4}[,]{1}\\d{0,4}[)]{1}")) 
-        throw new IllegalArgumentException();
+    if(!locs.matches("[(]{1}\\d{0,4}[,]{1}\\d{0,4}([,]{1}\\d{0,4})??[)]{1}")) 
+        throw new IllegalArgumentException("Bad coordinate input:"+locs);
   }
-  private void checkHospitalLocation(int x, int y, Ambulance amb) {
-    //if hostpial location not set, set it
-      if(amb.getHospitalX()==-1) amb.setHospitalLocation(x, y);
-      else if(amb.getHospitalX()!=x || amb.getHospitalY()!=y){
-        throw new IllegalArgumentException("The location of the hospital once" +
-        		" set cannot change!");
-      }
+  private void checkHospitalLocation(Location loc, Ambulance amb) {
+    //check if hospital exists
+    if(!hospitals.contains(loc))
+      throw new IllegalArgumentException("Hospital does not exist at location "
+          + loc);
+    
     
   }
   //locs look like: (94,82,111)
@@ -147,7 +173,7 @@ final class Validator{
         trim().split("\\)")[0]);
   }
   private int getY(String locs){
-    System.out.println("At getY:" + locs);
+    //System.out.println("At getY:" + locs);
     return Integer.parseInt(locs.split("\\(")[1].trim().split(",")[1]);//.split("\\)")[0]);
   }
   private int getTime(String locs){
@@ -156,6 +182,7 @@ final class Validator{
   private Validator(){
     injured = new ArrayList<Person>();
     ambulances = new ArrayList<Ambulance>();
+    hospitals = new ArrayList<Location>();
   }
 
   private void buildInput(Scanner in){
@@ -194,7 +221,7 @@ final class Validator{
       this.time = time;
     }
     boolean isAlive(int now){
-      return time>now; 
+      return time<now; 
     }
     public String toString(){
       return "I am #" + id+" at ("+x+","+y+") with time:" + time;
@@ -256,7 +283,6 @@ final class Validator{
       if(t>0){
         time += t;
         for(Person p: carrying){
-          System.out.println(p.isAlive(time));
           if(!p.isAlive(time)){
             System.out.println("Person:"+p.getId()+" has died in ambulance "
                 + id);
@@ -300,6 +326,53 @@ final class Validator{
     int getCurrY() {
       return currY;
     }
+    
+  }
+  class Location{
+    private int x;
+    private int y;
+    Location(int x, int y){
+      this.x = x;
+      this.y = y;
+    }
+    public void setX(int x) {
+      this.x = x;
+    }
+    public void setY(int y) {
+      this.y = y;
+    }
+    public int getX() {
+      return x;
+    }
+    public int getY() {
+      return y;
+    }
+    public String toString(){
+      return "("+x+","+y+")";
+    }
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + getOuterType().hashCode();
+      result = prime * result + x;
+      result = prime * result + y;
+      return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null || (getClass() != obj.getClass()))
+        return false;
+      Location other = (Location) obj;
+      return x==other.x && y==other.y;
+      
+    }
+    private Validator getOuterType() {
+      return Validator.this;
+    }
+    
     
   }
 
