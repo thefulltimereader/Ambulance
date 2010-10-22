@@ -54,7 +54,7 @@ final class Validator{
       
       if(line.length>3){ //pick up
         System.out.println("looking at Amb "+ ambulanceID+
-            " now at ("+amb.currX+","+amb.currY+") for pickup ");
+            " now at "+amb.currLoc.toString()+" for pickup ");
         int i = 2;
         //for(String s: line) System.out.print(s+" ");
         if(line[2].length() >3)
@@ -66,19 +66,18 @@ final class Validator{
           i++;
           String coordinates = line[i];
           checkCoordinateInput(coordinates); //line[2] = (x,y)
-          int px = getX(coordinates); 
-          int py = getY(coordinates);
+          Location ploc = getLocation(coordinates);
           int pt = getTime(coordinates);
           //System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
           System.out.println("\t\tpick up person " + pId);
-          checkStatusOfInjured(px,py,pt,rescuing);
+          checkStatusOfInjured(ploc,pt,rescuing);
           updateAmbulancePickup(rescuing, amb);
           i++;
         }
       }
       else{//drop off
         System.out.println("looking at Amb "+ ambulanceID+
-            " now at ("+amb.currX+","+amb.currY+") for dropoff ");
+            " now at "+amb.currLoc.toString()+"for dropoff ");
         if(line.length<3) 
           throw new IllegalArgumentException("specify the drop location");
         String coor = line[2];
@@ -88,6 +87,9 @@ final class Validator{
         updateAmbulanceDropOff(loc, amb);
       }
     }
+  }
+  private Location getLocation(String coordinates) {
+    return new Location(getX(coordinates), getY(coordinates));
   }
   private void setUpHospitals(String nextLine) {
     if (!nextLine.startsWith("Hospitals"))
@@ -103,7 +105,7 @@ final class Validator{
       Location loc = new Location(x,y);
       hospitals.add(loc);
       for(Ambulance amb: ambulances){
-        if(amb.getStartingHospitalId()==ind) amb.setHospitalLocation(loc);
+        if(amb.getStartingHospitalId()==ind) amb.setStartingLocation(loc);
       }
       
     }
@@ -116,14 +118,13 @@ final class Validator{
    */
   private void updateAmbulanceDropOff(Location loc, Ambulance amb) {
     int timeSpent = 1;//to unload
-    timeSpent += getManhattanDistance(amb.getCurrX(), amb.getCurrY(), 
-        loc.getX(), loc.getY());
+    timeSpent += getManhattanDistance(amb.getCurrLocation(), loc); 
     amb.addTime(timeSpent);
     int rescued = amb.dropOff();
     totalRescued += rescued;
     System.out.println("Ambulance "+amb.getId()+" dropped off " + rescued+ 
         " alive people");
-    
+     amb.setNewLocation(loc);
     
   }
   /**
@@ -138,10 +139,10 @@ final class Validator{
     if(amb.getNumOfPassengers()==MAX_PASSENGER)
       throw new IllegalStateException("This ambulance is full");
     amb.addRescued(p);
-    int timeTaken = getManhattanDistance(amb.getCurrX(), amb.getCurrY(),p.getX(), p.getY());    
+    int timeTaken = getManhattanDistance(amb.getCurrLocation(),p.getLoc());
     timeTaken++; //for loading p
     amb.addTime(timeTaken);
-    amb.setNewLocation(p.getX(), p.getY());
+    amb.setNewLocation(p.getLoc());
   }
   /**
    * Checks if the input is valid/whether the person has been rescued or not
@@ -150,9 +151,9 @@ final class Validator{
    * @param rescuing
    * @throws Exception
    */
-  private void checkStatusOfInjured(int px, int py, int pt, Person rescuing) 
+  private void checkStatusOfInjured(Location ploc, int pt, Person rescuing) 
   throws Exception {
-    if(rescuing.getX()!=px || rescuing.getY()!=py || rescuing.getTime()!=pt) 
+    if(!rescuing.getLoc().equals(ploc)|| rescuing.getTime()!=pt) 
             throw new IllegalArgumentException("The location of the person "+
                                               rescuing.getId()+" is not the same as input");
     if (rescuing.isRescued()) 
@@ -220,32 +221,25 @@ final class Validator{
 
   private class Person{
     final int id;
-    final int x;
-    final int y;
+    final Location loc;
     final int time;
     boolean rescued = false;
-    boolean dead = false;
     Person(int id, int x, int y, int time){
       this.id = id;
-      this.x = x;
-      this.y = y;
+      this.loc = new Location(x,y);
       this.time = time;
     }
     boolean isAlive(int now){
       return time>=now; 
     }
     public String toString(){
-      return "I am #" + id+" at ("+x+","+y+") with time:" + time;
+      return "I am #" + id+" at ("+loc.x+","+loc.y+") with time:" + time;
     }
     int getId(){
       return id;
     }
-    
-    int getX() {
-      return x;
-    }
-    int getY() {
-      return y;
+    Location getLoc(){
+      return loc;
     }
     int getTime() {
       return time;
@@ -256,18 +250,17 @@ final class Validator{
     boolean isRescued(){
       return rescued;
     }
-    void kill(){ dead = true;}
-    boolean isDead(){ return dead;}
-    
   }
   //sum of horizontal + vertical
-  int getManhattanDistance(int xOld, int yOld, int xNew, int yNew){
-    return Math.abs(xOld - xNew) + Math.abs(yOld - yNew);
+  int getManhattanDistance(Location old, Location newL){
+    return Math.abs(old.getX() -newL.getX()) + 
+    Math.abs(old.getY() - newL.getY());
   }
 
   private class Ambulance{
-    int hosX = -1, hosY = -1;
-    int id, time, currX, currY, hosID;
+    int id, time, hosID;
+    Location currLoc = new Location(-1,-1);
+    
     ArrayList<Person> carrying;
     Ambulance(int id,int hosID){
       this.id = id;
@@ -276,19 +269,18 @@ final class Validator{
       this.hosID = hosID;
     }
     
+    public void setNewLocation(Location loc) {
+      currLoc = loc;
+    }
+
     int getId(){
       return id;
     }
     int getStartingHospitalId(){
       return hosID;
     }
-    void setHospitalLocation(Location loc){
-      currX = hosX = loc.getX();
-      currY = hosY = loc.getY();
-    }
-    void setNewLocation(int x, int y){
-      currX = x;
-      currY = y;
+    void setStartingLocation(Location loc){
+      currLoc = loc;
     }
     /**
      * Update time for this amb and for all the people in it
@@ -301,7 +293,6 @@ final class Validator{
           if(!p.isAlive(time)){
             System.out.println("Person:"+p.getId()+" has died in ambulance "
                 + id);
-            p.kill();
           }
         }
       }
@@ -328,33 +319,21 @@ final class Validator{
     int getNumOfPassengers(){
       return carrying.size();
     }
-    
-    int getHospitalX(){
-      return hosX;
-    }
-    int getHospitalY(){
-      return hosY;
-    }
-    int getCurrX() {
-      return currX;
-    }
-    int getCurrY() {
-      return currY;
+    Location getCurrLocation(){
+      return currLoc;
     }
     
   }
   class Location{
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     Location(int x, int y){
       this.x = x;
       this.y = y;
     }
-    public void setX(int x) {
-      this.x = x;
-    }
-    public void setY(int y) {
-      this.y = y;
+    Location(Location loc) {
+      this.x = loc.getX();
+      this.y = loc.getY();
     }
     public int getX() {
       return x;
