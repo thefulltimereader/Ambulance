@@ -33,8 +33,10 @@ final class Validator{
       v.validate(input);
       System.out.println("Valid! Total # of people rescued = " + v.totalRescued);
     } catch (Exception e) {
-      System.err.println("Oops: "+ e.getMessage());
+      System.err.println("Error: "+ e.getMessage());
       e.printStackTrace();
+      System.out.println("Result invalid");
+      
     }
     
   }
@@ -75,9 +77,8 @@ final class Validator{
       else{//drop off
         System.out.println("looking at Amb "+ ambulanceID+
             " now at ("+amb.currX+","+amb.currY+") for dropoff ");
-        if(line.length<2) 
+        if(line.length<3) 
           throw new IllegalArgumentException("specify the drop location");
-
         String coor = line[2];
         checkCoordinateInput(coor);
         Location loc = new Location(getX(coor), getYForTwo(coor));
@@ -221,7 +222,7 @@ final class Validator{
       this.time = time;
     }
     boolean isAlive(int now){
-      return time<now; 
+      return time<=now; 
     }
     public String toString(){
       return "I am #" + id+" at ("+x+","+y+") with time:" + time;
