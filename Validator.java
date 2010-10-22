@@ -2,9 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.rmi.AlreadyBoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 final class Validator{
@@ -14,6 +12,7 @@ final class Validator{
   private List<Location> hospitals;
   private int numHospitals = 0;
   private int totalRescued = 0;
+  
 
   public static void main(String[] args){
     Validator v = new Validator();
@@ -101,9 +100,14 @@ final class Validator{
       checkCoordinateInput(locs); //line[2] = (x,y)
       int x = getX(locs);
       int y = getYForTwo(locs);
-      hospitals.add(new Location(x,y));
+      Location loc = new Location(x,y);
+      hospitals.add(loc);
+      for(Ambulance amb: ambulances){
+        if(amb.getStartingHospitalId()==ind) amb.setHospitalLocation(loc);
+      }
+      
     }
-    System.out.println(hospitals);
+    //System.out.println(hospitals);
   }
   /**
    * Drops off everyone in the ambulance to x, y hospital
@@ -187,11 +191,12 @@ final class Validator{
     injured = new ArrayList<Person>();
     ambulances = new ArrayList<Ambulance>();
     hospitals = new ArrayList<Location>();
+    
   }
 
   private void buildInput(Scanner in){
     in.nextLine();//let the first line go
-    int pId=0, hosId = 0;
+    int pId=0, ambId = 0;
     while(in.hasNextLine()){
       String[] ints = in.nextLine().split(",");
       if(ints.length==3){
@@ -200,11 +205,13 @@ final class Validator{
         //  System.out.println(p.toString());
         injured.add(p);  
         pId++;
-      } else if (ints[0].length() == 1) {
-        for (int i = numHospitals,len = Integer.parseInt(ints[0])+numHospitals;
-        i < len; i++) {
-          ambulances.add(new Ambulance(hosId));
-          hosId++;
+      }
+      //hospitals!!
+      else if (ints[0].matches("\\d+")) {
+        int numOfAmb = Integer.parseInt(ints[0]);
+        for (int len =ambId+numOfAmb; ambId< len; ambId++) {
+          ambulances.add(new Ambulance(ambId, numHospitals));
+          
         }
         numHospitals++;
       }
@@ -225,7 +232,7 @@ final class Validator{
       this.time = time;
     }
     boolean isAlive(int now){
-      return time<=now; 
+      return time>=now; 
     }
     public String toString(){
       return "I am #" + id+" at ("+x+","+y+") with time:" + time;
@@ -260,20 +267,24 @@ final class Validator{
 
   private class Ambulance{
     int hosX = -1, hosY = -1;
-    int id, time, currX, currY;
+    int id, time, currX, currY, hosID;
     ArrayList<Person> carrying;
-    Ambulance(int id){
+    Ambulance(int id,int hosID){
       this.id = id;
       carrying = new ArrayList<Person>();
       time = 0;
+      this.hosID = hosID;
     }
     
     int getId(){
       return id;
     }
-    void setHospitalLocation(int x, int y){
-      currX = hosX = x;
-      currY = hosY = y;
+    int getStartingHospitalId(){
+      return hosID;
+    }
+    void setHospitalLocation(Location loc){
+      currX = hosX = loc.getX();
+      currY = hosY = loc.getY();
     }
     void setNewLocation(int x, int y){
       currX = x;
