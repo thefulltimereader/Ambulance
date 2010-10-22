@@ -51,7 +51,7 @@ final class Validator{
       checkCoordinateInput(locs); //line[2] = (x,y)
       int x = getX(locs); int y = getYForTwo(locs);
       Ambulance amb = ambulances.get(ambulanceID);
-      System.out.println("looking at Amb "+ ambulanceID+" at ("+x+","+y+")");
+      System.out.println("looking at Amb "+ ambulanceID+" at ("+amb.currX+","+amb.currY+")");
       if(line.length>3){ //pick up
         checkHospitalLocation(x,y,amb);
         int i = 3;
@@ -194,7 +194,7 @@ final class Validator{
       this.time = time;
     }
     boolean isAlive(int now){
-      return time<now; 
+      return time>now; 
     }
     public String toString(){
       return "I am #" + id+" at ("+x+","+y+") with time:" + time;
@@ -256,6 +256,7 @@ final class Validator{
       if(t>0){
         time += t;
         for(Person p: carrying){
+          System.out.println(p.isAlive(time));
           if(!p.isAlive(time)){
             System.out.println("Person:"+p.getId()+" has died in ambulance "
                 + id);
