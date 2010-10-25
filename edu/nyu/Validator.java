@@ -181,9 +181,13 @@ final class Validator{
    */
   private void checkStatusOfInjured(Location ploc, int pt, Person rescuing) 
   throws Exception {
-    if(!rescuing.getLoc().equals(ploc)|| rescuing.getTime()!=pt) 
-            throw new IllegalArgumentException("The location of the person "+
-                                              rescuing.getId()+" is not the same as input");
+    if(!rescuing.getLoc().equals(ploc)|| rescuing.getTime()!=pt) {
+      System.err.println("Rescuing is at: " + rescuing.getLoc() + " with time:"+
+          rescuing.getTime() + " in data base person with same id is at"+ploc+
+          " with time"  + pt);
+      throw new IllegalArgumentException("The location of the person and/or time"+
+                                              rescuing.getId()+" is not the same as the input");
+    }
     if (rescuing.isRescued()) 
             throw new AlreadyBoundException("Already Rescued");
     
