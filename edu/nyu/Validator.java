@@ -124,8 +124,21 @@ final class Validator{
      plotter.setUp(ofInjured, hospitals);
      draw();
     }
+    rescuePeopleUnderHospitals();
     //System.out.println(hospitals);
   }
+  private void rescuePeopleUnderHospitals() {
+    for(Person p: injured){
+      if(hospitals.contains(p.getLoc())){
+        p.rescue();
+        totalRescued++;
+        System.out.println("Person#"+p.getId() + " was rescued, hospital was " +
+        		"built right where he/she was at "+ p.getLoc());
+      }
+    }
+    
+  }
+
   /**
    * Drops off everyone in the ambulance to x, y hospital
    * @param x
@@ -138,7 +151,7 @@ final class Validator{
     int rescued = amb.dropOff();
     totalRescued += rescued;
     System.out.println("Ambulance "+amb.getId()+" dropped off " + rescued+ 
-        " alive people");
+        " alive people, \n\t total # of people rescued so far: " + totalRescued);
      amb.setNewLocation(loc);
     
   }
@@ -197,7 +210,7 @@ final class Validator{
         trim().split("\\)")[0]);
   }
   private int getY(String locs){
-    System.out.println("At getY:" + locs);
+    //System.out.println("At getY:" + locs);
     return Integer.parseInt(locs.split("\\(")[1].trim().split(",")[1]);//.split("\\)")[0]);
   }
   private int getTime(String locs){
