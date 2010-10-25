@@ -189,7 +189,7 @@ final class Validator{
                                               rescuing.getId()+" is not the same as the input");
     }
     if (rescuing.isRescued()) 
-            throw new AlreadyBoundException("Already Rescued");
+            throw new AlreadyBoundException(rescuing + " is already Rescued");
     
   }
   private void checkCoordinateInput(String locs) {
