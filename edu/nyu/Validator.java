@@ -45,7 +45,7 @@ final class Validator{
   }
   
   private void draw(){
-    plotter.draw();
+    //plotter.draw();
   }
   /**
    * the core method. Reads result line by line and validate it.
@@ -181,10 +181,10 @@ final class Validator{
    */
   private void checkStatusOfInjured(Location ploc, int pt, Person rescuing) 
   throws Exception {
-    if(!rescuing.getLoc().equals(ploc)|| rescuing.getTime()!=pt) {
-      System.err.println("Rescuing is at: " + rescuing.getLoc() + " with time:"+
-          rescuing.getTime() + " in data base person with same id is at"+ploc+
-          " with time"  + pt);
+    if(!rescuing.getLoc().equals(ploc)/*|| rescuing.getTime()!=pt*/) {
+      //System.err.println("Rescuing is at: " + rescuing.getLoc() + " with time:"+
+        //  rescuing.getTime() + " in data base person with same id is at"+ploc+
+        //  " with time"  + pt);
       throw new IllegalArgumentException("The location of the person and/or time"+
                                               rescuing.getId()+" is not the same as the input");
     }
