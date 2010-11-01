@@ -78,9 +78,6 @@ final class Validator{
           int pt = getTime(coordinates);
           //System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
           System.out.println("\tAmb " + amb.id+" now at "+amb.currLoc.toString()+" pick up person " + pId);
-          if(pId==242){
-            System.out.println("asdf");
-          }
           checkStatusOfInjured(ploc,pt,rescuing);
           updateAmbulancePickup(rescuing, amb);
           i++;
@@ -89,9 +86,7 @@ final class Validator{
       else{//drop off
         System.out.print("looking at Amb "+ ambulanceID+
             " now at "+amb.currLoc.toString()+" for DROP OFF at ");
-        if(ambulanceID==13){
-          System.out.println("");
-        }
+        
         if(line.length<3) 
           throw new IllegalArgumentException("specify the drop location");
         String coor = line[2];
