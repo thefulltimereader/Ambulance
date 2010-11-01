@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import edu.nyu.Validator.Location;
 
 public class Plotter extends JFrame {
-  private static final int SCALE = 4;
+  private static final int SCALE = 1;
   public static void main(String[] args){
     Plotter p = new Plotter();
     p.draw();

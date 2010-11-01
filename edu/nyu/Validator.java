@@ -13,7 +13,7 @@ final class Validator{
   private List<Location> hospitals;
   private int numHospitals = 0;
   private int totalRescued = 0;
-  private Plotter plotter;
+  //private Plotter plotter;
   
 
   public static void main(String[] args){
@@ -45,7 +45,7 @@ final class Validator{
   }
   
   private void draw(){
-    //plotter.draw();
+  //plotter.draw();
   }
   /**
    * the core method. Reads result line by line and validate it.
@@ -62,7 +62,7 @@ final class Validator{
       
       if(line.length>3){ //pick up
         System.out.println("looking at Amb "+ ambulanceID+
-            " now at "+amb.currLoc.toString()+" for pickup ");
+            " for PICKUP");
         int i = 2;
         //for(String s: line) System.out.print(s+" ");
         if(line[2].length() >3)
@@ -70,8 +70,6 @@ final class Validator{
           		"be followed by rescuing personID");
         while (i < line.length-1){
           int pId = Integer.parseInt(line[i]);
-          if(pId == 55) 
-          		System.out.println("!!");
           Person rescuing = injured.get(pId);
           i++;
           String coordinates = line[i];
@@ -79,20 +77,27 @@ final class Validator{
           Location ploc = getLocation(coordinates);
           int pt = getTime(coordinates);
           //System.out.println("pId: " + pId+" px: "+px+" py:" + py + " pt:" + pt);
-          System.out.println("\t\tpick up person " + pId);
+          System.out.println("\tAmb " + amb.id+" now at "+amb.currLoc.toString()+" pick up person " + pId);
+          if(pId==242){
+            System.out.println("asdf");
+          }
           checkStatusOfInjured(ploc,pt,rescuing);
           updateAmbulancePickup(rescuing, amb);
           i++;
         }
       }
       else{//drop off
-        System.out.println("looking at Amb "+ ambulanceID+
-            " now at "+amb.currLoc.toString()+"for dropoff ");
+        System.out.print("looking at Amb "+ ambulanceID+
+            " now at "+amb.currLoc.toString()+" for DROP OFF at ");
+        if(ambulanceID==13){
+          System.out.println("");
+        }
         if(line.length<3) 
           throw new IllegalArgumentException("specify the drop location");
         String coor = line[2];
         checkCoordinateInput(coor);
         Location loc = new Location(getX(coor), getYForTwo(coor));
+        System.out.println(loc);
         checkHospitalLocation(loc,amb);
         updateAmbulanceDropOff(loc, amb);
       }
@@ -121,8 +126,8 @@ final class Validator{
      for(Person p : injured){
        ofInjured.add(p.getLoc());
      }
-     plotter.setUp(ofInjured, hospitals);
-     draw();
+     //plotter.setUp(ofInjured, hospitals);
+     //draw();
     }
     rescuePeopleUnderHospitals();
     //System.out.println(hospitals);
@@ -151,7 +156,7 @@ final class Validator{
     int rescued = amb.dropOff();
     totalRescued += rescued;
     System.out.println("Ambulance "+amb.getId()+" dropped off " + rescued+ 
-        " alive people, \n\t total # of people rescued so far: " + totalRescued);
+        " alive people, total # of people rescued so far: " + totalRescued);
      amb.setNewLocation(loc);
     
   }
@@ -224,7 +229,7 @@ final class Validator{
     injured = new ArrayList<Person>();
     ambulances = new ArrayList<Ambulance>();
     hospitals = new ArrayList<Location>();
-    plotter = new Plotter();
+    //plotter = new Plotter();
   }
 
   private void buildInput(Scanner in){
